@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 日志级别从低到高分为TRACE < DEBUG < INFO < WARN < ERROR < FATAL，如果设置为WARN，则低于WARN的信息都不会输出 -->
+<!-- Logback没有FATAL级别 -->
+<!-- scan:当此属性设置为true时，配置文档如果发生改变，将会被重新加载，默认值为true -->
+<!-- scanPeriod:设置监测配置文档是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒。 当scan为true时，此属性生效。默认的时间间隔为1分钟。 -->
+<!-- debug:当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。 -->
+<configuration scan="true" scanPeriod="10 seconds" debug="false">
+	<contextName>logback</contextName>
+	<!-- name的值是变量的名称，value的值时变量定义的值。通过定义的值会被插入到logger上下文中。定义后，可以使“${}”来使用变量。 -->
+	<!-- <property name="log.path" value="G:/Development/eclipse" /> -->
+  	<!-- <property  name="log.path">${catalina.home:.}/logs</property> -->
+  	<springProperty name="log.path" scope="context" source="logging.file.path"/>
+  	<springProperty name="log.level" scope="context" source="log.level"/>
+
+	<!-- 彩色日志依赖的渲染类 -->
+	<conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+	<conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
+	<conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
+	<!-- 彩色日志格式 -->
+	<property name="CONSOLE_LOG_PATTERN" value="${CONSOLE_LOG_PATTERN:-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}" />
+
+	<!--1. 输出到控制台 -->
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>TRACE</level>
+		</filter>
+		<encoder>
+			<Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+	</appender>
+	
+	<!-- 日志输出格式： %d表示日期时间， %thread表示线程名， %-5level：级别从左显示5个字符宽度 %logger{50} 表示logger名字最长50个字符，否则按照句点分割。 
+		%msg：日志消息， %n是换行符  https://blog.csdn.net/qq_34208844/article/details/86289218 -->
+	<!--2. 输出到文档 -->
+	<!-- 1、TRACE -->
+	<appender name="TRACE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${log.path}/log_trace.log</file>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${log.path}/trace/log-trace-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>20MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<maxHistory>15</maxHistory>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>TRACE</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+	<!-- 2、DEBUG -->
+	<appender name="DEBUG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${log.path}/log_debug.log</file>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${log.path}/debug/log-debug-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>20MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<maxHistory>15</maxHistory>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>DEBUG</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+	<!-- 3、INFO -->
+	<appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${log.path}/log_info.log</file>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${log.path}/info/log-info-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>20MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<maxHistory>15</maxHistory>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+	<!-- 4、WARN -->
+	<appender name="WARN_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${log.path}/log_warn.log</file>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+			<charset>UTF-8</charset>
+		</encoder> 
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${log.path}/warn/log-warn-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>20MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<maxHistory>15</maxHistory>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>WARN</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+	<!-- 5、ERROR -->
+	<appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${log.path}/log_error.log</file>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${log.path}/error/log-error-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>20MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<maxHistory>15</maxHistory>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+	<!-- 6、FATAL -->
+	<!-- Logback没有FATAL级别 -->
+	<appender name="FATAL_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${log.path}/log_fatal.log</file>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${log.path}/fatal/log-fatal-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>20MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<maxHistory>15</maxHistory>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>FATAL</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+	
+	
+	<appender name="mqAppender1" class="org.apache.rocketmq.logappender.logback.RocketmqLogbackAppender">
+	      <tag>TestTag</tag>
+	      <topic>TestTopic</topic>
+	      <producerGroup>spring-rocket</producerGroup>
+	      <nameServerAddress>127.0.0.1:9876</nameServerAddress>
+	      <layout>
+	          <pattern>%date %p %t - %m%n</pattern>
+	      </layout>
+	</appender>
+	<appender name="mqAsyncAppender1" class="ch.qos.logback.classic.AsyncAppender">
+	      <queueSize>1024</queueSize>
+	      <discardingThreshold>80</discardingThreshold>
+	      <maxFlushTime>2000</maxFlushTime>
+	      <neverBlock>true</neverBlock>
+	      <appender-ref ref="mqAppender1"/>
+	</appender>
+	
+	<!-- 
+		<logger>用来设置某一个包或者具体的某一个类的日志打印级别、 以及指定<appender>。
+		<logger>仅有一个name属性，一个可选的level和一个可选的addtivity属性。 name:用来指定受此logger约束的某一个包或者具体的某一个类。 
+		level:用来设置打印级别，大小写无关：TRACE,DEBUG, INFO, WARN, ERROR, ALL 和 OFF， 还有一个特俗值INHERITED或者同义词NULL，代表强制执行上级的级别。 
+		如果未设置此属性，那么当前logger将会继承上级的级别。 addtivity:是否向上级logger传递打印信息。默认是true。 
+		例如：
+		<logger name="org.springframework.web" level="info"/> 
+		<logger name="org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor" level="INFO"/> 
+	-->
+	<!-- <logger name="com.suriot.equipment.api.common" level="INFO"/>  -->
+
+	<!-- 
+		使用mybatis的时候，sql语句是debug下才会打印，而这里我们只配置了info，所以想要查看sql语句的话，有以下两种操作： 
+		第一种把<root level="info">改成<root level="DEBUG">这样就会打印sql，不过这样日志那边会出现很多其他消息 
+		第二种就是单独给dao下目录配置debug模式，代码如下，这样配置sql语句会打印，其他还是正常info级别： 
+		【logging.level.org.mybatis=debug 
+		logging.level.dao=debug】
+	-->
+
+	<!-- 
+		root节点是必选节点，用来指定最基础的日志输出级别，只有一个level属性，
+		level:用来设置打印级别，大小写无关：TRACE,DEBUG,INFO,WARN,ERROR,ALL和 OFF，
+		不能设置为INHERITED或者同义词NULL。
+		默认是DEBUG 可以包含零个或多个元素，标识这个appender将会添加到这个logger。
+	-->
+
+	<!-- 开发环境:打印控制台 -->
+	<!-- <springProfile name="dev"> 
+		<logger name="com.sdcm.pmp" level="debug"/> 
+	</springProfile> -->
+	
+	<root level="${log.level}">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="TRACE_FILE" />
+		<appender-ref ref="DEBUG_FILE" />
+		<appender-ref ref="INFO_FILE" />
+		<appender-ref ref="WARN_FILE" />
+		<appender-ref ref="ERROR_FILE" />
+		<appender-ref ref="mqAppender1" />
+	</root>
+	
+	<!--生产环境:输出到文件-->
+    <!-- <springProfile name="prod">
+    	<root level="info">
+    		<appender-ref ref="TRACE_FILE" />
+			<appender-ref ref="DEBUG_FILE" />
+			<appender-ref ref="INFO_FILE" />
+			<appender-ref ref="WARN_FILE" />
+			<appender-ref ref="ERROR_FILE" />
+			<appender-ref ref="FATAL_FILE" />
+    	</root>
+    </springProfile> -->
+	
+	<!-- <springProfile name="pro">
+		<root level="DEBUG">
+			<appender-ref ref="TRACE_FILE" />
+			<appender-ref ref="DEBUG_FILE" />
+			<appender-ref ref="INFO_FILE" />
+			<appender-ref ref="WARN_FILE" />
+			<appender-ref ref="ERROR_FILE" />
+			<appender-ref ref="FATAL_FILE" />
+		</root>
+	</springProfile> -->
+	<!-- 4.2 生产环境:输出到文档 <springProfile name="pro"> <root level="DEBUG"> <appender-ref 
+		ref="CONSOLE" /> <appender-ref ref="DEBUG_FILE" /> <appender-ref ref="INFO_FILE" 
+		/> <appender-ref ref="ERROR_FILE" /> <appender-ref ref="WARN_FILE" /> </root> 
+		</springProfile> -->
+
+</configuration>

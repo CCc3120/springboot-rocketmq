@@ -1,0 +1,41 @@
+server:
+  port: 22222
+
+rocketmq:
+  producer:
+    isOff: on
+# 发送同一类消息设置为同一个group，保证唯一默认不需要设置，rocketmq会使用ip@pid（pid代表jvm名字）作为唯一标识
+    groupName: spring-rocket
+# mq的nameserver地址
+    namesrvAddr: 127.0.0.1:9876
+# 消息最大长度 默认 1024 * 4 (4M)
+    maxMessageSize: 4096
+# 发送消息超时时间，默认 3000
+    sendMsgTimeOut: 3000
+# 发送消息失败重试次数，默认2
+    retryTimesWhenSendFailed: 2
+    
+  consumer:
+    isOff: on
+# 发送同一类消息设置为同一个group，保证唯一默认不需要设置，rocketmq会使用ip@pid（pid代表jvm名字）作为唯一标识
+    groupName: spring-rocket
+# mq的nameserver地址
+    namesrvAddr: 127.0.0.1:9876
+# 消费者订阅的主题topic和tags（*标识订阅该主题下所有的tags），格式: topic~tag1||tag2||tags3;
+    topics: MyTopic~myTag
+# 消费者线程数据量
+    consumeThreadMin: 5
+    consumeThreadMax: 32
+# 设置一次消费信心的条数，默认1
+    consumeMessageBatchMaxSize: 1
+    animal:
+      tag: panda
+      topic: animal
+    
+logging:
+  config: classpath:logback-spring.xml
+  file:
+    path: ${catalina.home:.}/logs
+    
+log:
+  level: DEBUG
